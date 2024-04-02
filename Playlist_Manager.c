@@ -61,7 +61,28 @@ void addSong(struct node **head, struct node **tail) {
 
 
 void deleteSong(struct node **head, struct node **tail){
-    
+    char name[50];
+    char artist[50];
+    int duration;
+    struct node *p;
+
+    p = *head;
+
+    printf("enter the name of the song you want to delete: ");
+    fgets(name, 50, stdin);
+    name[strcspn(name, "\n")] = 0;
+
+    printf("enter the name of the artist: ");
+    fgets(artist, 50, stdin);
+    artist[strcspn(artist, "\n")] = 0;
+
+    while(p != NULL){
+        if(name != p->title || artist != p->artist){
+            p = p->next;
+        }else{
+            p = p->next->next;
+        }
+    }
 }
 
 void menu(struct node **head, struct node **tail){
