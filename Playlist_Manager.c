@@ -59,30 +59,96 @@ void addSong(struct node **head, struct node **tail) {
     while (choice == 'y' || choice == 'Y');
 }
 
-
 void deleteSong(struct node **head, struct node **tail){
     char name[50];
-    char artist[50];
-    int duration;
+    //char artist[50];
     struct node *p;
+    struct node *prev;
 
     p = *head;
+    prev = *head; 
 
     printf("enter the name of the song you want to delete: ");
     fgets(name, 50, stdin);
     name[strcspn(name, "\n")] = 0;
 
-    printf("enter the name of the artist: ");
-    fgets(artist, 50, stdin);
-    artist[strcspn(artist, "\n")] = 0;
+    printf("\n");
+
+    if(p != NULL && strcmp(p->title, name) == 0){
+        *head = p->next; 
+        free(p);
+        return;
+    }
+
+    while(p != NULL && strcmp(p->title, name) != 0){
+        prev = p; 
+        p = p->next;
+    }
+
+    if(p == NULL){
+        printf("song could not be found. Returning to menu\n");
+        return;
+    }
+
+    prev->next = p->next; 
+
+    free(p);
+
+    printf("%s has successfully been deleted. Returning to menu. \n", name);
+}
+
+void searchSong(struct node *head){
+    //could also search for song that start with a certain letter (optional)
+    char name[50];
+    struct node *p;
+
+    p = head;
+    
+    printf("enter the name of the song you would like to find: ");
+    fgets(name, 50, stdin);
+    name[strcspn(name, "\n")] = 0; 
 
     while(p != NULL){
-        if(name != p->title || artist != p->artist){
+        if(p != NULL && strcmp(p->title, name) == 0){
+            printf("Song title: %s \n", p->title);
+            printf("Song artist: %s \n", p->artist);
+            printf("song duration: %d \n", p->duration);
+            printf("\n");
+            return;
+        }else if(p != NULL && strcmp(p->title, name) != 0){
             p = p->next;
-        }else{
-            p = p->next->next;
         }
     }
+    printf("song could not be found. Returning to menu.\n");
+    return;
+}
+
+void searchByArtist(struct node *head){
+    char artistName[50];
+    struct node *p;
+
+    p = head;
+
+    printf("Please enter the artist you would like to search by: ");
+    fgets(artistName, 50, stdin);
+    artistName[strcspn(artistName, "\n")] = 0;
+    printf("\n");
+
+    printf("Showing songs by %s: \n", artistName);
+    printf("\n");
+
+    while(p != NULL){
+        if(strcmp(p->artist, artistName) == 0){
+            printf("Song title: %s \n", p->title);
+            printf("Song artist: %s \n", p->artist);
+            printf("song duration: %d \n", p->duration);
+            printf("\n");
+            p = p->next;
+        }else{
+            p = p->next;
+        }
+    }
+    return;
 }
 
 void menu(struct node **head, struct node **tail){
@@ -94,8 +160,9 @@ void menu(struct node **head, struct node **tail){
         printf("1. to add a new song to the list: \n");
         printf("2. Delete a song from the list: \n");
         printf("3. Search for a song on the list: \n");
-        printf("4. Print the entire song list: \n");
-        printf("5. Total list duration: \n");
+        printf("4. Search for songs by a particular artist: \n");
+        printf("5. Print the entire song list: \n");
+        printf("6. Total list duration: \n");
         printf("0. To exit\n");
         scanf("%d", &choice);
         printf("\n");
@@ -107,17 +174,19 @@ void menu(struct node **head, struct node **tail){
                 addSong(head, tail);
                 break;
             case 2:
-               // deleteSong();
+               deleteSong(head, tail);
                 break;
             case 3:
-               // searchSong();
+               searchSong(*head);
                 break;
             case 4:
-                printList(*head);
+                searchByArtist(*head);
                 break;
             case 5:
-               // totalTime();
+                printList(*head);
                 break;
+            case 6:
+                //total list duration
             case 0:
                 return;
         }
