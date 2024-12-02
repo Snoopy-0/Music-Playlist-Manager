@@ -98,7 +98,6 @@ void deleteSong(struct node **head, struct node **tail){
 }
 
 void searchSong(struct node *head){
-    //could also search for song that start with a certain letter (optional)
     char name[50];
     struct node *p;
 
@@ -151,6 +150,104 @@ void searchByArtist(struct node *head){
     return;
 }
 
+void listDuration(struct node *head){
+    int count;
+    int seconds;
+    int minutes;
+    struct node *p;
+    p = head; 
+
+    while(p != NULL){
+        count = count + p->duration;
+        p = p->next;
+    }
+
+    minutes = count/60; 
+    seconds = count % 60;
+
+    printf("playlist duration is %d:%d minutes long.\n", minutes, seconds);
+    return;
+}
+/*
+void shuffleList(struct node *head){
+    struct node *p;
+    struct node *temp;
+    p = head;
+    temp = head;
+
+    while(p != NULL){
+        
+    }
+}*/
+
+void savePlaylist(struct node *head){
+    FILE *fptr;
+    fptr = fopen("savedPlaylist.txt", "w");
+    struct node *p;
+    p = head;
+
+    if(fptr != NULL){
+        while(p != NULL){
+            fprintf(fptr, "--------------------------------------------\n");
+            fprintf(fptr, "Song Title: %s\n", p->title);
+            fprintf(fptr, "Song artist: %s\n",p->artist);
+            fprintf(fptr, "Song Duration: %d\n", p->duration);
+
+            p = p->next;
+        }
+    }else{
+        printf("could not save playlist to a file. Returning to menu");
+        return;
+    }
+    printf("Done! playlist has been successfully saved to a file. Returning to menu.\n");
+    fclose(fptr);
+    return;
+}
+
+void loadPlaylist(struct node *head){
+    char filename[50];
+    char fData[100];
+
+    printf("Please enter the file name to open: ");
+    fgets(filename, 50, stdin);
+    filename[strcspn(filename, "\n")] = 0;
+
+    FILE *fptr = fopen(filename,"r");
+    if(fptr != NULL){
+        while(fgets(fData, 100, fptr)){
+            if(strncmp(fData, "Song Title:", 11) == 0){
+                char *title = fData + 11;
+                title += strspn(title, " ");
+            }else{
+
+            } 
+            if(strncmp(fData, "Song artist:", 12) == 0){
+                char *artist = fData + 12;
+                artist += strspn(artist, " ");
+            }else{
+
+            } 
+            if(strncmp(fData, "Song Duration:", 14) == 0){
+                char *durationStr = fData + 14;
+                int duration = atoi(durationStr);
+            }
+        }
+    }else{
+        printf("could not open %s. Returning to menu.", filename);
+        return;
+    }
+}
+
+void createList(char title[50], char artist[50], int duration){
+    struct node *head = NULL, *tail = NULL, *cnode;
+    while(1){
+        cnode = (struct node *)malloc(sizeof(struct node));
+        strcpy(cnode->title, title);
+        strcpy(cnode->artist, artist);
+        cnode->duration = duration; 
+    }
+}
+
 void menu(struct node **head, struct node **tail){
     while(1){
         int choice;
@@ -163,6 +260,9 @@ void menu(struct node **head, struct node **tail){
         printf("4. Search for songs by a particular artist: \n");
         printf("5. Print the entire song list: \n");
         printf("6. Total list duration: \n");
+        printf("7. Shuffle the playlist randomly: \n");
+        printf("8. Save the playlist to a text file: \n");
+        printf("9. Open a saved playlist text file: \n");
         printf("0. To exit\n");
         scanf("%d", &choice);
         printf("\n");
@@ -186,7 +286,17 @@ void menu(struct node **head, struct node **tail){
                 printList(*head);
                 break;
             case 6:
-                //total list duration
+                listDuration(*head);
+                break;
+            case 7:
+                //shuffleList(*head);
+                break;
+            case 8:
+                savePlaylist(*head);
+                break;
+            case 9:
+                loadPlaylist(*head);
+                break;
             case 0:
                 return;
         }
